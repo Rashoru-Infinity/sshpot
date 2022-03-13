@@ -129,6 +129,7 @@ int main(int argc, char *argv[]) {
 		}
 		db.host = strchr(optarg, '@') + 1;
 		memcpy(db_user, optarg, strchr(optarg, '@') - optarg);
+		db_user[16] = 0;
 		db.user = db_user;
                 break;
 
