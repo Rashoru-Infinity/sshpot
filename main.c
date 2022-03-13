@@ -22,7 +22,7 @@ static ssh_bind sshbind;
 
 /* Print usage information to `stream', exit with `exit_code'. */
 static void usage(FILE *stream, int exit_code) {
-    fprintf(stream, "Usage: sshpot [-c <credential>] [-d <database>] [-e] [-h] [-p <port>] [-s <port>]\n");
+    fprintf(stream, "Usage: sshpot [-d <database>] [-e] [-h] [-l <password>] [-p <port>] [-s <port>] [-u <user>@<host>]\n");
     fprintf(stream,
             "   -d  --database <db_name>   Name of SQL database.\n"
             "   -e  --enable-sql    Enable to use SQL database.\n"
