@@ -10,6 +10,7 @@
 #include <getopt.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 
 #define MINPORT 0
 #define MAXPORT 65535
@@ -21,10 +22,15 @@ static ssh_bind sshbind;
 
 /* Print usage information to `stream', exit with `exit_code'. */
 static void usage(FILE *stream, int exit_code) {
-    fprintf(stream, "Usage: sshpot [-h] [-p <port>]\n");
+    fprintf(stream, "Usage: sshpot [-c <credential>] [-d <database>] [-e] [-h] [-p <port>] [-s <port>]\n");
     fprintf(stream,
+            "   -d  --database <db_name>   Name of SQL database.\n"
+            "   -e  --enable-sql    Enable to use SQL database.\n"
             "   -h  --help          Display this usage information.\n"
-            "   -p  --port <port>   Port to listen on; defaults to 22.\n");
+            "   -l  --login-password <password>    Login password of SQL database.\n"
+            "   -p  --port <port>   Port to listen on; defaults to 22.\n"
+            "   -s  --sql-port <port>   Server port of the SQL database; defaults to 3306.\n"
+            "   -u  --user <user>@<host>  User of SQL database.; user@host\n");
     exit(exit_code);
 }
 
@@ -70,24 +76,40 @@ static void wrapup(void) {
     exit(0);
 }
 
-
 int main(int argc, char *argv[]) {
     int port = DEFAULTPORT;
+    struct dbinfo db;
+    char db_user[32] = {0};
 
     /* Handle command line options. */
     int next_opt = 0;
-    const char *short_opts = "hp:";
+    const char *short_opts = "d:ehl:p:s:u:";
     const struct option long_opts[] = {
+	{ "database", 1, NULL, 'd' },
+	{ "enable-sql", 0, NULL, 'e' },
         { "help",   0, NULL, 'h' },
+        { "login-password",   1, NULL, 'l' },
         { "port",   1, NULL, 'p' },
+        { "sql-port",   1, NULL, 's' },
+	{ "user", 1, NULL, 'u' },
         { NULL,     0, NULL, 0   }
     };
+    memset(&db, 0, sizeof(struct dbinfo));
 
     while (next_opt != -1) {
         next_opt = getopt_long(argc, argv, short_opts, long_opts, NULL);
         switch (next_opt) {
+            case 'd':
+		db.db_name = optarg;
+                break;
+            case 'e':
+		db.enable_sql = true;
+                break;
             case 'h':
                 usage(stdout, 0);
+                break;
+            case 'l':
+		db.password = optarg;
                 break;
 
             case 'p':
@@ -95,6 +117,19 @@ int main(int argc, char *argv[]) {
                     fprintf(stderr, "Port must range from %d - %d\n\n", MINPORT, MAXPORT);
                     usage(stderr, 1);
                 }
+                break;
+
+            case 's':
+		db.port = atoi(optarg);
+                break;
+
+            case 'u':
+		if (!strchr(optarg, '@')) {
+			return 1;
+		}
+		db.host = strchr(optarg, '@') + 1;
+		memcpy(db_user, optarg, strchr(optarg, '@') - optarg);
+		db.user = db_user;
                 break;
 
             case '?':
@@ -108,6 +143,17 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "Fatal error, aborting...\n");
                 exit(1);
         }
+    }
+    if (db.port == 0) {
+	    db.port = 3306;
+	}
+    if (DEBUG) {
+    	fprintf(stderr, "enable-sql %s\n", db.enable_sql ? "true" : "false");
+    	fprintf(stderr, "db-host %s\n", db.host);
+    	fprintf(stderr, "db-user %s\n", db.user);
+    	fprintf(stderr, "db-password %s\n", db.password);
+    	fprintf(stderr, "db_name %s\n", db.db_name);
+    	fprintf(stderr, "sql-port %u\n", db.port);
     }
 
     /* There shouldn't be any other parameters. */
@@ -149,7 +195,7 @@ int main(int argc, char *argv[]) {
                 exit(-1);
 
             case 0:
-                exit(handle_auth(session));
+                exit(handle_auth(session, db));
 
             default:
                 break;

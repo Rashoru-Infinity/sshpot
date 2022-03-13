@@ -65,7 +65,7 @@ static int log_attempt(struct connection *c) {
 
 
 /* Logs password auth attempts. Always replies with SSH_MESSAGE_USERAUTH_FAILURE. */
-int handle_auth(ssh_session session) {
+int handle_auth(ssh_session session, struct dbinfo db) {
     struct connection con;
     con.session = session;
 
@@ -86,6 +86,9 @@ int handle_auth(ssh_session session) {
         /* Log the authentication request and disconnect. */
         if (ssh_message_subtype(con.message) == SSH_AUTH_METHOD_PASSWORD) {
                 log_attempt(&con);
+		if (db.enable_sql) {
+			report_to_sql(&con, db);
+		}
         }
         else {
             if (DEBUG) { fprintf(stderr, "Not a password authentication attempt.\n"); }
