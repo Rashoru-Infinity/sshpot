@@ -79,7 +79,7 @@ static void wrapup(void) {
 int main(int argc, char *argv[]) {
     int port = DEFAULTPORT;
     struct dbinfo db;
-    char db_user[32] = {0};
+    char db_user[17] = {0};
 
     /* Handle command line options. */
     int next_opt = 0;
