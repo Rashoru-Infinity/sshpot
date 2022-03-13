@@ -25,7 +25,7 @@ Installation:
 SQL Table Structure:
     Table Name : ATTACKLOG
     +---------------------+----------------+------------------+-----------------------+
-    | TIMESTAMP TIMESTAMP | IP VARCHAR(43) | USER VARCHAR(33) | PASSWORD VARCHAR(256) |
+    | TIMESTAMP TIMESTAMP | IP VARCHAR(43) | USER VARCHAR(32) | PASSWORD VARCHAR(255) |
     +---------------------+----------------+------------------+-----------------------+
 
 Usage:
