@@ -24,9 +24,9 @@ Installation:
 
 SQL Table Structure:
     Table Name : ATTACKLOG
-    +-----------+-------------+-------------+--------------+
-    | TIMESTAMP | VARCHAR(43) | VARCHAR(33) | VARCHAR(256) |
-    +-----------+-------------+-------------+--------------+
+    +---------------------+----------------+------------------+-----------------------+
+    | TIMESTAMP TIMESTAMP | IP VARCHAR(43) | USER VARCHAR(33) | PASSWORD VARCHAR(256) |
+    +---------------------+----------------+------------------+-----------------------+
 
 Usage:
     sshpot [-d <database>] [-e] [-h] [-l <password>] [-p <port>] [-s <port>] [-u <user>@<host>]
