@@ -22,14 +22,23 @@ Installation:
         > make
         # make install (optional, but necessary to listen on ports < 1024.)
 
+SQL Table Structure:
+    Table Name : ATTACKLOG
+    +-----------+-------------+-------------+--------------+
+    | TIMESTAMP | VARCHAR(43) | VARCHAR(33) | VARCHAR(256) |
+    +-----------+-------------+-------------+--------------+
 
 Usage:
-
-    sshpot [-h] [-p <port>]
+    sshpot [-d <database>] [-e] [-h] [-l <password>] [-p <port>] [-s <port>] [-u <user>@<host>]
+        -d  --database <db_name>   Name of SQL database.
+        -e  --enable-sql    Enable to use SQL database.
         -h  --help          Display this usage information.
+        -l  --login-password <password>    Login password of SQL database.
         -p  --port <port>   Port to listen on; defaults to 22.
-
+        -s  --sql-port <port>   Server port of the SQL database; defaults to 3306.
+        -u  --user <user>@<host>  User of SQL database.; user@host
 
 Dependencies:
 
     libssh http://www.libssh.org/
+    libmysqlclient-dev
